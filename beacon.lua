@@ -35,8 +35,17 @@ minetest.register_node("locator:beacon_base", {
 	sounds = default.node_sound_glass_defaults()
 })
 
+minetest.register_craft({
+	output = "locator:beacon_base",
+	recipe = {
+		{"default:glass", "default:mese", "default:glass"},
+		{"default:diamondblock", "default:mese", "default:diamondblock"},
+		{"default:glass", "default:mese", "default:glass"}
+	}
+})
+
 -- level/range register beacon
-local register_beacon = function(level, range)
+local register_beacon = function(level, range, ingredient)
 
 	minetest.register_node("locator:beacon_" .. level, {
 		description = "Locator beacon, level: " .. level .. ", range: " .. range,
@@ -105,10 +114,19 @@ local register_beacon = function(level, range)
 
 	})
 
+	minetest.register_craft({
+		output = "locator:beacon_" .. level,
+		recipe = {
+			{"default:glass", "default:mese", "default:glass"},
+			{ingredient, ingredient, ingredient},
+			{"default:glass", "default:mese", "default:glass"}
+		}
+	})
+
 end
 
 
-register_beacon(1, 500) -- short range
-register_beacon(2, 5000) -- mid range
-register_beacon(3, 30000) -- long range
+register_beacon(1, 500, "locator:beacon_base") -- short range
+register_beacon(2, 5000, "locator:beacon_1") -- mid range
+register_beacon(3, 30000, "locator:beacon_2") -- long range
 
