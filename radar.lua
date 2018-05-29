@@ -91,9 +91,9 @@ minetest.register_node("locator:radar", {
 minetest.register_craft({
 	output = "locator:radar",
 	recipe = {
-		{"default:glass", "default:mese", "default:glass"},
+		{"default:glass", "locator:beacon_base", "default:glass"},
 		{"locator:beacon_base", "locator:beacon_base", "locator:beacon_base"},
-		{"default:glass", "default:mese", "default:glass"}
+		{"default:glass", "locator:beacon_base", "default:glass"}
 	}
 })
 
