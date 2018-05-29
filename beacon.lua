@@ -65,9 +65,8 @@ local register_beacon = function(level, range, ingredient)
 			meta:set_string("owner", placer:get_player_name() or "")
 		end,
 
-		on_dig = function(pos)
+		after_dig_node = function(pos)
 			locator.remove_beacon(pos)
-			return true
 		end,
 
 		on_construct = function(pos)
