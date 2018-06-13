@@ -1,14 +1,5 @@
 
 
-local update_formspec = function(meta)
-	local inv = meta:get_inventory()
-
-	meta:set_string("formspec", "size[8,3;]" ..
-		-- col 1
-		"button_exit[0,1;8,1;sweep;Radar sweep]" ..
-		"")
-end
-
 local hud = {} -- playername -> {}
 
 local clear_radar = function(playername)
@@ -26,13 +17,17 @@ local clear_radar = function(playername)
 	hud[playername] = nil
 end
 
+local format_pos = function(pos)
+	return pos.x .. "/" .. pos.y .. "/" .. pos.z
+end
+
 local show_radar = function(pos, player)
 	local name = player:get_player_name()
 	local hud_data = hud[name]
 
 	if hud_data then
-		-- already active hud
-		return
+		-- already active hud, clear stale data
+		clear_radar(name)
 	end
 
 	hud_data = {}
@@ -43,7 +38,7 @@ local show_radar = function(pos, player)
 			-- in range
 			local id = player:hud_add({
 				hud_elem_type = "waypoint",
-				name = "Beacon: " .. beacon.name,
+				name = "Beacon: " .. beacon.name .. ", " .. format_pos(beacon.pos),
 				text = "m",
 				number = 0x00FF00,
 				world_pos = beacon.pos
@@ -54,10 +49,6 @@ local show_radar = function(pos, player)
 	end
 
 	hud[name] = hud_data;
-
-	minetest.after(10, function()
-		clear_radar(name)
-	end)
 
 end
 
@@ -73,18 +64,7 @@ minetest.register_node("locator:radar", {
 		"locator_radar.png"
 	},
 	groups = {cracky=3,oddly_breakable_by_hand=3},
-	sounds = default.node_sound_glass_defaults(),
-
-	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
-		update_formspec(meta)
-	end,
-
-	on_receive_fields = function(pos, formname, fields, sender)
-		if fields.sweep then
-			show_radar(pos, sender)
-		end
-	end
+	sounds = default.node_sound_glass_defaults()
 })
 
 
@@ -96,4 +76,27 @@ minetest.register_craft({
 		{"default:glass", "locator:beacon_base", "default:glass"}
 	}
 })
+
+-- timeout check
+local timer = 0
+local radius = 8
+minetest.register_globalstep(function(dtime)
+	timer = timer + dtime;
+
+	-- check every 2 seconds if radar nearby
+	if timer >= 2 then
+		local players = minetest.get_connected_players()
+		for i,player in pairs(players) do
+			local pos = player:get_pos()
+			local node = minetest.find_node_near(pos, radius, {"locator:radar"}, true)
+			if node then
+				show_radar(pos, player)
+			else
+				clear_radar(player:get_player_name())
+			end
+		end
+
+		timer = 0
+	end
+end)
 
