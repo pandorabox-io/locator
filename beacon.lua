@@ -38,9 +38,9 @@ minetest.register_node("locator:beacon_base", {
 minetest.register_craft({
 	output = "locator:beacon_base",
 	recipe = {
-		{"default:glass", "default:mese", "default:glass"},
-		{"default:diamondblock", "default:mese", "default:diamondblock"},
-		{"default:glass", "default:mese", "default:glass"}
+		{"default:glass", "wool:red", "default:glass"},
+		{"default:stick", "default:mese_crystal", "default:stick"},
+		{"default:glass", "wool:black", "default:glass"}
 	}
 })
 
