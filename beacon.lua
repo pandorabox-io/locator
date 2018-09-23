@@ -116,9 +116,9 @@ local register_beacon = function(level, range, ingredient)
 	minetest.register_craft({
 		output = "locator:beacon_" .. level,
 		recipe = {
-			{"default:glass", "default:mese", "default:glass"},
+			{"default:glass", "default:mese_crystal", "default:glass"},
 			{ingredient, ingredient, ingredient},
-			{"default:glass", "default:mese", "default:glass"}
+			{"default:glass", "default:mese_crystal", "default:glass"}
 		}
 	})
 
