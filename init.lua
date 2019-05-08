@@ -8,6 +8,6 @@ locator = {
 dofile(MP.."/beacon.lua")
 dofile(MP.."/functions.lua")
 dofile(MP.."/radar.lua")
-dofile(MP.."/cleanup.lua")
+-- dofile(MP.."/cleanup.lua")
 
 print("[OK] Locator")
