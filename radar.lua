@@ -56,6 +56,9 @@ local update_formspec = function(meta)
         local inv = meta:get_inventory()
 
 	local range = meta:get_int("range") or 1000
+	if range == 0 then
+		range = 1000
+	end
 
         meta:set_string("formspec", "size[8,2;]" ..
                 -- col 1
@@ -80,14 +83,18 @@ minetest.register_node("locator:radar", {
 	sounds = default.node_sound_glass_defaults(),
 
 	on_receive_fields = function(pos, formname, fields, sender)
-		if minetest.is_protected(pos, sender) then
+		if minetest.is_protected(pos, sender:get_player_name()) then
 			return
 		end
 
 		local meta = minetest.get_meta(pos)
 
 		if fields.save and fields.range then
-			meta:set_int("range", tonumber(fields.range) or 1000)
+			local range = tonumber(fields.range)
+			if not range or range <= 0 or range > 32000 then
+				range = 1000
+			end
+			meta:set_int("range", range)
 		end
 
 		update_formspec(meta)
@@ -95,6 +102,7 @@ minetest.register_node("locator:radar", {
 
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
+		meta:set_int("range", 1000)
 		update_formspec(meta)
 	end,
 
@@ -126,6 +134,9 @@ minetest.register_globalstep(function(dtime)
 			if node then
 				local meta = minetest.get_meta(node)
 				local range = meta:get_int("range") or 1000
+				if range == 0 then
+					range = 1000
+				end
 				show_radar(pos, player, range)
 			else
 				clear_radar(player:get_player_name())
