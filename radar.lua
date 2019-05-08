@@ -21,7 +21,7 @@ local format_pos = function(pos)
 	return pos.x .. "/" .. pos.y .. "/" .. pos.z
 end
 
-local show_radar = function(pos, player)
+local show_radar = function(pos, player, maxrange)
 	local name = player:get_player_name()
 	local hud_data = hud[name]
 
@@ -34,7 +34,7 @@ local show_radar = function(pos, player)
 
 	for i,beacon in pairs(locator.beacons) do
 		local distance = vector.distance(pos, beacon.pos)
-		if distance < beacon.range then
+		if distance < beacon.range and distance < maxrange then
 			-- in range
 			local id = player:hud_add({
 				hud_elem_type = "waypoint",
@@ -49,8 +49,21 @@ local show_radar = function(pos, player)
 	end
 
 	hud[name] = hud_data;
-
 end
+
+
+local update_formspec = function(meta)
+        local inv = meta:get_inventory()
+
+	local range = meta:get_int("range") or 1000
+
+        meta:set_string("formspec", "size[8,2;]" ..
+                -- col 1
+                "field[0,1.5;4,1;range;Range;" .. range .. "]" ..
+                "button_exit[4,1;4,1;save;Save]" ..
+                "")
+end
+
 
 -- locator radar
 minetest.register_node("locator:radar", {
@@ -64,7 +77,28 @@ minetest.register_node("locator:radar", {
 		"locator_radar.png"
 	},
 	groups = {cracky=3,oddly_breakable_by_hand=3},
-	sounds = default.node_sound_glass_defaults()
+	sounds = default.node_sound_glass_defaults(),
+
+	on_receive_fields = function(pos, formname, fields, sender)
+		if minetest.is_protected(pos, sender) then
+			return
+		end
+
+		local meta = minetest.get_meta(pos)
+
+		if fields.save and fields.range then
+			meta:set_int("range", tonumber(fields.range) or 1000)
+		end
+
+		update_formspec(meta)
+	end,
+
+	on_construct = function(pos)
+		local meta = minetest.get_meta(pos)
+		update_formspec(meta)
+	end,
+
+
 })
 
 
@@ -90,7 +124,9 @@ minetest.register_globalstep(function(dtime)
 			local pos = player:get_pos()
 			local node = minetest.find_node_near(pos, radius, {"locator:radar"}, true)
 			if node then
-				show_radar(pos, player)
+				local meta = minetest.get_meta(node)
+				local range = meta:get_int("range") or 1000
+				show_radar(pos, player, range)
 			else
 				clear_radar(player:get_player_name())
 			end
