@@ -32,6 +32,7 @@ minetest.register_node("locator:beacon_base", {
 		"locator_beacon_base.png",
 	},
 	groups = {cracky=3,oddly_breakable_by_hand=3},
+	is_ground_content = false,
 	sounds = default.node_sound_glass_defaults()
 })
 
@@ -58,6 +59,7 @@ local register_beacon = function(level, range, ingredient)
 			"locator_beacon_level" .. level .. ".png"
 		},
 		groups = {cracky=3,oddly_breakable_by_hand=3},
+		is_ground_content = false,
 		sounds = default.node_sound_glass_defaults(),
 
 		after_place_node = function(pos, placer)

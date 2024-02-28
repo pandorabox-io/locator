@@ -80,6 +80,7 @@ minetest.register_node("locator:radar", {
 		"locator_radar.png"
 	},
 	groups = {cracky=3,oddly_breakable_by_hand=3},
+	is_ground_content = false,
 	sounds = default.node_sound_glass_defaults(),
 
 	on_receive_fields = function(pos, formname, fields, sender)
