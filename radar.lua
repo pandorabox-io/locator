@@ -32,9 +32,9 @@ local show_radar = function(pos, player, maxrange)
 
 	hud_data = {}
 
-	for i,beacon in pairs(locator.beacons) do
+	for _, beacon in ipairs(locator.beacons) do
 		local distance = vector.distance(pos, beacon.pos)
-		if distance < beacon.range and distance < maxrange then
+		if beacon.active and distance < beacon.range and distance < maxrange then
 			-- in range
 			local id = player:hud_add({
 				hud_elem_type = "waypoint",
